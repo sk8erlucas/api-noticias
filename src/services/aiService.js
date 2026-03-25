@@ -9,7 +9,7 @@ const client = new OpenAI({
   },
 });
 
-const MODEL = process.env.AI_MODEL || 'meta-llama/llama-3.1-8b-instruct:free';
+const MODEL = process.env.AI_MODEL || 'z-ai/glm-4.5-air:free';
 
 const SYSTEM_PROMPT = `Eres un analista financiero especializado en el mercado argentino.
 Tu tarea es analizar noticias financieras y responder ÚNICAMENTE con un objeto JSON válido, sin markdown ni texto adicional.
@@ -50,10 +50,12 @@ Contenido: ${contenido.substring(0, 3000)}`;
       { role: 'user', content: userPrompt },
     ],
     temperature: 0.2,
-    max_tokens: 600,
+    max_tokens: 1000,
   });
 
-  const text = response.choices[0]?.message?.content || '';
+  const text = response.choices[0]?.message?.content
+    || response.choices[0]?.message?.reasoning
+    || '';
 
   // Extraer JSON aunque venga envuelto en bloques markdown
   const jsonMatch = text.match(/\{[\s\S]*\}/);

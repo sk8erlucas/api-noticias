@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Noticia {
+  id               Int       @id @default(autoincrement())
+  titulo           String
+  link             String    @unique
+  descripcion      String?
+  contenido        String?   @db.Text
+  resumen          String?   @db.Text
+  impacto          String?   // "FUERTE", "MODERADO", "DEBIL"
+  sentimiento      String?   // "POSITIVO", "NEGATIVO", "NEUTRO"
+  razonImpacto     String?
+  razonSentimiento String?
+  fuente           String?
+  publicadoEn      DateTime?
+  procesadoEn      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("noticias")
+}
+
+model Feed {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  url       String   @unique
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("feeds")
+}

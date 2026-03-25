@@ -1,8 +1,12 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Archivos estáticos (panel HTML)
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Rutas
 app.use('/api/noticias', require('./routes/news.routes'));

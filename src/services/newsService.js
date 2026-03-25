@@ -62,8 +62,8 @@ async function processNews() {
           contenido = item.descripcion || '';
         }
 
-        // Analizar con IA (delay adicional para respetar rate limits)
-        await sleep(1000);
+        // Analizar con IA (delay de 1 minuto para respetar rate limits)
+        await sleep(60000);
         let analisis = null;
         try {
           const textoParaAnalizar = contenido || item.descripcion || item.titulo;

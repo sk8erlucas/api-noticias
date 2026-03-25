@@ -1,19 +1,23 @@
 # 📰 API de Noticias Financieras Argentina
 
-API REST para la recopilación automática, análisis de impacto y consulta de noticias financieras del mercado argentino. Utiliza inteligencia artificial (OpenRouter) para generar resúmenes y determinar el impacto y sentimiento de cada noticia.
+> Proyecto desarrollado para hackathon — Marzo 2026
+
+API REST para la recopilación automática, análisis de impacto y consulta de noticias financieras del mercado argentino. Utiliza inteligencia artificial (OpenRouter) para generar resúmenes y determinar el impacto y sentimiento de cada noticia. Incluye un panel web para visualizar las noticias directamente en el navegador.
 
 ## Características
 
+- **Panel web** en `/` para explorar todas las noticias con filtros y paginación
 - **Scraping automático** de feeds RSS de noticias financieras argentinas
 - **Análisis con IA** para cada noticia:
   - Resumen conciso (máx. 3 oraciones)
   - Nivel de impacto: `FUERTE`, `MODERADO` o `DEBIL`
   - Sentimiento: `POSITIVO`, `NEGATIVO` o `NEUTRO`
   - Razón del impacto y del sentimiento
+- **Rate limiting seguro**: delay de 60 segundos entre llamadas a la IA para respetar los límites de OpenRouter
 - **Cron job** que ejecuta el procesamiento cada 24 horas (00:00 hora Argentina)
 - **Deduplicación** automática por URL: no se repiten noticias ya guardadas
 - **Feeds dinámicos**: se pueden agregar/quitar fuentes RSS sin reiniciar el servidor
-- **Trigger manual** del job vía endpoint REST
+- **Trigger manual** del job vía endpoint REST o ejecutando `npm run execute:now`
 
 ## Stack Tecnológico
 

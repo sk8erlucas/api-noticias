@@ -23,10 +23,10 @@ API REST para la recopilación automática, análisis de impacto y consulta de n
 
 | Componente | Tecnología |
 |---|---|
-| Runtime | Node.js |
+| Runtime | Node.js >= 18 |
 | Framework | Express.js |
-| ORM | Prisma |
-| Base de datos | PostgreSQL |
+| ORM | Prisma 7 |
+| Base de datos | PostgreSQL >= 13 |
 | IA | OpenRouter (modelos gratuitos) |
 | Scraping | Axios + Cheerio |
 | RSS | rss-parser |
@@ -90,19 +90,27 @@ Crear un archivo `.env` basado en `.env.example`:
 | `APP_URL` | URL pública de la aplicación | No | `http://localhost:3000` |
 | `DATABASE_URL` | URL de conexión a PostgreSQL | **Sí** | — |
 | `OPENROUTER_API_KEY` | API Key de [OpenRouter](https://openrouter.ai) | **Sí** | — |
-| `AI_MODEL` | Modelo de IA a utilizar | No | `meta-llama/llama-3.1-8b-instruct:free` |
+| `AI_MODEL` | Modelo de IA a utilizar | No | `z-ai/glm-4.5-air:free` |
 
 > ⚠️ **IMPORTANTE**: Nunca comitees el archivo `.env`. Está incluido en `.gitignore`.
 
 ### Modelos gratuitos disponibles en OpenRouter
 
-- `meta-llama/llama-3.1-8b-instruct:free` *(default)*
+- `z-ai/glm-4.5-air:free` *(default actual)*
+- `meta-llama/llama-3.1-8b-instruct:free`
 - `google/gemma-2-9b-it:free`
 - `mistralai/mistral-7b-instruct:free`
 
 Ver lista completa en [openrouter.ai/models](https://openrouter.ai/models?q=free).
 
 ## API Reference
+
+### 🌐 Panel Web
+
+#### `GET /`
+Abre el panel visual de noticias en el navegador. Permite navegar, filtrar y leer todas las noticias almacenadas en la base de datos.
+
+---
 
 ### 🗞️ Noticias
 
@@ -219,13 +227,21 @@ El procesamiento ocurre en background; la respuesta es inmediata.
 
 El sistema ejecuta automáticamente el procesamiento **todos los días a las 00:00 hora Argentina** (`America/Argentina/Buenos_Aires`).
 
+Para ejecutar de forma inmediata sin esperar el cron, usá:
+```bash
+npm run execute:now
+```
+O disparar el endpoint `POST /api/jobs/ejecutar`.
+
 **Flujo de procesamiento:**
 1. Lee todos los feeds marcados como activos
 2. Parsea el RSS y obtiene los artículos disponibles
 3. Por cada artículo, verifica si ya existe en la DB (por URL)
-4. Si es nuevo: scrapea el contenido completo del artículo
-5. Envía título + contenido a la IA para análisis
+4. Si es nuevo: scrapea el contenido completo del artículo *(delay 1.5s entre scrapes)*
+5. Envía título + contenido a la IA para análisis *(delay 60s entre llamadas)*
 6. Guarda la noticia con su resumen, impacto y sentimiento
+
+> ℹ️ El delay de 60 segundos entre análisis de IA es intencional para respetar los rate limits de los modelos gratuitos de OpenRouter.
 
 ## Scripts disponibles
 
@@ -237,6 +253,7 @@ El sistema ejecuta automáticamente el procesamiento **todos los días a las 00:
 | `npm run db:migrate` | Crea una migración con nombre |
 | `npm run db:seed` | Carga los feeds iniciales |
 | `npm run db:studio` | Abre Prisma Studio (UI de la DB) |
+| `npm run execute:now` | Ejecuta el procesamiento de noticias inmediatamente |
 
 ## Agregar más feeds
 

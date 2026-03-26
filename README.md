@@ -4,6 +4,61 @@
 
 API REST para la recopilación automática, análisis de impacto y consulta de noticias financieras del mercado argentino. Utiliza inteligencia artificial (OpenRouter) para generar resúmenes y determinar el impacto y sentimiento de cada noticia. Incluye un panel web para visualizar las noticias directamente en el navegador.
 
+---
+
+## 🌐 Demo en vivo
+
+| Endpoint | URL |
+|---|---|
+| Health check | [https://notifinanzas-api.sitemaster.com.ar/health](https://notifinanzas-api.sitemaster.com.ar/health) |
+| Panel web | [https://notifinanzas-api.sitemaster.com.ar](https://notifinanzas-api.sitemaster.com.ar) |
+| API de noticias | [https://notifinanzas-api.sitemaster.com.ar/api/noticias](https://notifinanzas-api.sitemaster.com.ar/api/noticias) |
+
+---
+
+## ☁️ Deploy con CubePath
+
+El proyecto fue desplegado en producción utilizando **[CubePath](https://cubepath.com/)** como proveedor de infraestructura cloud.
+
+### Pasos realizados
+
+1. **Provisión del VPS en CubePath**
+   Se levantó un VPS con sistema operativo Linux directamente desde el panel de CubePath, seleccionando los recursos necesarios (CPU, RAM, almacenamiento) para soportar la API y la base de datos PostgreSQL.
+
+2. **Instalación de Dokploy**
+   Sobre el VPS se instaló **[Dokploy](https://dokploy.com)**, una plataforma open-source de self-hosting que permite gestionar aplicaciones y bases de datos de forma sencilla, similar a Heroku pero autoalojado.
+
+3. **Configuración del proyecto en Dokploy**
+   - Se conectó el repositorio de GitHub con Dokploy para habilitar deploys automáticos desde la rama `main`.
+   - Se configuraron las variables de entorno (`DATABASE_URL`, `OPENROUTER_API_KEY`, etc.) directamente desde el panel de Dokploy.
+   - Dokploy gestiona el build (`npm install` + `prisma generate`) y el proceso en producción (`npm start`).
+
+4. **Base de datos PostgreSQL**
+   Dokploy provisiona y gestiona el servicio de PostgreSQL dentro del mismo VPS, exponiendo la `DATABASE_URL` de forma automática al contenedor de la aplicación.
+
+5. **Dominio y HTTPS**
+   CubePath asigna la infraestructura de red. Dokploy configura automáticamente el proxy reverso (Traefik) y los certificados SSL/TLS para el dominio `notifinanzas-api.sitemaster.com.ar`.
+
+### Arquitectura en producción
+
+```
+Internet
+   │
+   ▼
+CubePath VPS
+   │
+   ├── Dokploy (Traefik proxy + HTTPS)
+   │      │
+   │      ├── api-noticias (Node.js / Express)
+   │      │      └── Prisma ORM
+   │      │
+   │      └── PostgreSQL (gestionado por Dokploy)
+   │
+   └── Cron job interno (node-cron → 00:00 ART)
+```
+
+---
+
 ## Características
 
 - **Panel web** en `/` para explorar todas las noticias con filtros y paginación

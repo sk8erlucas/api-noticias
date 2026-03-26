@@ -72,6 +72,12 @@ async function processNews() {
           console.warn(`[NewsService] Análisis IA fallido: ${aiError.message}`);
         }
 
+        if (!analisis) {
+          console.warn(`[NewsService] Noticia omitida (sin análisis): ${item.titulo}`);
+          omitidas++;
+          continue;
+        }
+
         // Guardar en la base de datos
         await prisma.noticia.create({
           data: {

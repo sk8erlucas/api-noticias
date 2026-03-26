@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
-const originGuard = require('./middlewares/originGuard');
 
 const app = express();
 
@@ -25,9 +24,6 @@ const noticiasLimiter = rateLimit({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Restricción de origen: solo *.sitemaster.com.ar
-app.use(originGuard);
 
 // Rate limit global
 app.use(generalLimiter);

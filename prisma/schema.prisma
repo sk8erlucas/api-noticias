@@ -18,6 +18,7 @@ model Noticia {
   razonImpacto     String?
   razonSentimiento String?
   fuente           String?
+  pais             String?   // "AR", "ES", etc.
   publicadoEn      DateTime?
   procesadoEn      DateTime?
   createdAt        DateTime  @default(now())
@@ -31,6 +32,7 @@ model Feed {
   nombre    String
   url       String   @unique
   activo    Boolean  @default(true)
+  pais      String?  // "AR", "ES", etc.
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

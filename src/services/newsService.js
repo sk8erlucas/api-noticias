@@ -86,6 +86,7 @@ async function processNews() {
             descripcion: item.descripcion || null,
             contenido: contenido || null,
             fuente: item.fuente || null,
+            pais: feed.pais || null,
             publicadoEn: item.publicadoEn || null,
             procesadoEn: new Date(),
             resumen: analisis?.resumen || null,

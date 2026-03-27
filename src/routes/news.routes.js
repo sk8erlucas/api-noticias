@@ -8,7 +8,7 @@ const IMPACTOS_VALIDOS = ['FUERTE', 'MODERADO', 'DEBIL'];
 // GET /api/noticias — Listar noticias con paginación y filtros
 router.get('/', async (req, res, next) => {
   try {
-    const { page = 1, limit = 20, sentimiento, impacto, fuente } = req.query;
+    const { page = 1, limit = 20, sentimiento, impacto, fuente, pais } = req.query;
 
     const pageNum = Math.max(1, parseInt(page) || 1);
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
@@ -32,6 +32,9 @@ router.get('/', async (req, res, next) => {
     if (fuente) {
       where.fuente = { contains: fuente, mode: 'insensitive' };
     }
+    if (pais) {
+      where.pais = pais.toUpperCase();
+    }
 
     const [noticias, total] = await Promise.all([
       prisma.noticia.findMany({
@@ -49,6 +52,7 @@ router.get('/', async (req, res, next) => {
           razonImpacto: true,
           razonSentimiento: true,
           fuente: true,
+          pais: true,
           publicadoEn: true,
           procesadoEn: true,
           createdAt: true,

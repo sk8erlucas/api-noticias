@@ -4,6 +4,10 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
+// Necesario cuando la app corre detrás de un proxy (Railway, Render, etc.)
+// para que express-rate-limit pueda leer la IP real desde X-Forwarded-For
+app.set('trust proxy', 1);
+
 // Rate limiter general: 500 peticiones cada 15 minutos por IP
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -22,6 +26,15 @@ const noticiasLimiter = rateLimit({
   message: { error: 'Demasiadas peticiones al endpoint de noticias. Intentá de nuevo más tarde.' },
 });
 
+// Rate limiter estricto para auth: 20 peticiones cada 15 minutos por IP
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Demasiados intentos. Intentá de nuevo más tarde.' },
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,6 +48,8 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/noticias', noticiasLimiter, require('./routes/news.routes'));
 app.use('/api/feeds', require('./routes/feed.routes'));
 app.use('/api/jobs', require('./routes/job.routes'));
+app.use('/api/auth', authLimiter, require('./routes/auth.routes'));
+app.use('/api/user', require('./routes/user.routes'));
 
 
 // Health check

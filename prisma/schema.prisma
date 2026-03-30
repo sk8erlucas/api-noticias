@@ -24,6 +24,9 @@ model Noticia {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
+  leerMasTarde LeerMasTarde[]
+  favoritos    Favorito[]
+
   @@map("noticias")
 }
 
@@ -37,4 +40,44 @@ model Feed {
   updatedAt DateTime @updatedAt
 
   @@map("feeds")
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  nombre    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leerMasTarde LeerMasTarde[]
+  favoritos    Favorito[]
+
+  @@map("usuarios")
+}
+
+model LeerMasTarde {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  noticiaId Int
+  createdAt DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  noticia Noticia @relation(fields: [noticiaId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, noticiaId])
+  @@map("leer_mas_tarde")
+}
+
+model Favorito {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int
+  noticiaId Int
+  createdAt DateTime @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  noticia Noticia @relation(fields: [noticiaId], references: [id], onDelete: Cascade)
+
+  @@unique([usuarioId, noticiaId])
+  @@map("favoritos")
 }

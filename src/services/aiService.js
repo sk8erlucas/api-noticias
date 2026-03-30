@@ -50,20 +50,29 @@ Contenido: ${contenido.substring(0, 3000)}`;
       { role: 'user', content: userPrompt },
     ],
     temperature: 0.2,
-    max_tokens: 1000,
+    max_tokens: 1500,
   });
 
   const text = response.choices[0]?.message?.content
     || response.choices[0]?.message?.reasoning
     || '';
 
-  // Extraer JSON aunque venga envuelto en bloques markdown
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
+  // 1. Intentar extraer JSON de bloque markdown: ```json { ... } ```
+  const fenceMatch = text.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+  // 2. Si no hay fence, buscar el primer objeto JSON completo en el texto
+  const rawMatch = text.match(/\{[\s\S]*\}/);
+
+  const jsonStr = fenceMatch?.[1] ?? rawMatch?.[0];
+  if (!jsonStr) {
     throw new Error(`Respuesta de IA no contiene JSON válido: ${text.substring(0, 200)}`);
   }
 
-  const parsed = JSON.parse(jsonMatch[0]);
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonStr);
+  } catch {
+    throw new Error(`JSON de IA malformado: ${jsonStr.substring(0, 200)}`);
+  }
 
   // Normalizar valores a mayúsculas
   return {

@@ -82,10 +82,12 @@ CubePath VPS
 | Framework | Express.js |
 | ORM | Prisma 7 |
 | Base de datos | PostgreSQL >= 13 |
+| Driver adapter | `@prisma/adapter-pg` |
 | IA | OpenRouter (modelos gratuitos) |
 | Scraping | Axios + Cheerio |
 | RSS | rss-parser |
 | Scheduler | node-cron |
+| TypeScript | Sólo `prisma.config.ts` (tsconfig.json incluido) |
 
 ## Instalación
 
@@ -304,6 +306,7 @@ O disparar el endpoint `POST /api/jobs/ejecutar`.
 |---|---|
 | `npm start` | Inicia el servidor en producción |
 | `npm run dev` | Inicia con hot-reload (nodemon) |
+| `npm run build` | Compila `prisma.config.ts` con TypeScript |
 | `npm run db:push` | Sincroniza el schema con la DB (sin migración) |
 | `npm run db:migrate` | Crea una migración con nombre |
 | `npm run db:seed` | Carga los feeds iniciales |
